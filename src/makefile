@@ -39,4 +39,4 @@ all:
 	
 clean:
 # @-rm -f $(TARGET) >/dev/null || true
-	@-rm -f ../bin/* >/dev/null || true
+	@-rm -f ../bin/$(FILENAMEROOT)* >/dev/null || true
