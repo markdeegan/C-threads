@@ -9,6 +9,7 @@ Examine how these variable change as the threads run */
 #include <stdio.h>      // this is required for accessing printf etc.
 #include <inttypes.h>   // this is required for the format spefifying for PRIu64
 #include <unistd.h>     // this is required for accessing the process ID
+#include <sys/syscall.h> // this is required to use syscall() 
 
 // Let us create a global variable to change it in threads
 int global_variable;
@@ -17,9 +18,11 @@ int global_variable;
 void* myThreadFun(void* vargp)
 { // start definition of the thread function
     // declare a variable to hold the thread ID
-    uint64_t m_tid;
-    // retrieve and store the process ID in m_tid
-    pthread_threadid_np(NULL, &m_tid);
+    // using type of pid_t as it's the return type from syscall(SYS_gettid)
+    pid_t m_tid;
+    // retrieve and store the thread ID in m_tid
+    // this is a posix specific system call to retrieve this threads id 
+    m_tid = syscall(SYS_gettid);
 
     // store the process ID
     int myid = getpid();
@@ -38,7 +41,7 @@ void* myThreadFun(void* vargp)
     global_variable++;
     
     // printf("HELLO from thread runnable1 with process ID: %d,  thread ID: %ld\n", myid, m_tid);
-    printf("ProcessID: %d, ThreadID:%" PRIu64 ", Local: %d, Static: %d, Global: %d\n", myid, m_tid, local_variable, local_static_variable, global_variable);
+    printf("ProcessID: %d, ThreadID:%d, Local: %d, Static: %d, Global: %d\n", myid, m_tid, local_variable, local_static_variable, global_variable);
 
     return 0;
 } // end definition of the thread function
