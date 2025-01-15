@@ -17,9 +17,9 @@ int global_variable;
 void* myThreadFun(void* vargp)
 { // start definition of the thread function
     // declare a variable to hold the thread ID
-    uint64_t m_tid;
+    pthread_t m_tid;
     // retrieve and store the process ID in m_tid
-    pthread_threadid_np(NULL, &m_tid);
+    m_tid = pthread_self();
 
     // store the process ID
     int myid = getpid();
@@ -38,7 +38,7 @@ void* myThreadFun(void* vargp)
     global_variable++;
     
     // printf("HELLO from thread runnable1 with process ID: %d,  thread ID: %ld\n", myid, m_tid);
-    printf("ProcessID: %d, ThreadID:%" PRIu64 ", Local: %d, Static: %d, Global: %d\n", myid, m_tid, local_variable, local_static_variable, global_variable);
+    printf("ProcessID: %d, ThreadID:%lu, Local: %d, Static: %d, Global: %d\n", myid, m_tid, local_variable, local_static_variable, global_variable);
 
     return 0;
 } // end definition of the thread function
