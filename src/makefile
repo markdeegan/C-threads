@@ -6,7 +6,7 @@
 ########################################
 # define variables for the gcc compiler
 CXX		= gcc
-CXXFLAGS 	= -Wall
+CXXFLAGS 	= -Wall -Wno-unused-variable
 BINDIR 		= ../bin
 
 VERSIONS = 02 03 04

@@ -13,16 +13,37 @@ Examine how these variable change as the threads run */
 // Let us create a global variable to change it in threads
 int global_variable;
 
+int get_thread_id() {
+#if defined(__linux__)
+    return syscall(SYS_gettid);
+#elif defined(__FreeBSD__)
+    long tid;
+    thr_self(&tid);
+    return (int)tid;
+#elif defined(__NetBSD__)
+    return _lwp_self();
+#elif defined(__OpenBSD__)
+    return getthrid();
+#else
+    return getpid();
+#endif
+}
+
 // The function to be executed by all threads
 void* myThreadFun(void* vargp)
 { // start definition of the thread function
     // declare a variable to hold the thread ID
-    uint64_t m_tid;
+    uint64_t m_tid1;
+    uint64_t m_tid2 = 0;
+    // uint64_t m_tid3;
     // retrieve and store the process ID in m_tid
-    pthread_threadid_np(NULL, &m_tid);
+    pthread_threadid_np(NULL, &m_tid1);
+    // m_tid2 = pthread_self();
 
     // store the process ID
     int myid = getpid();
+
+    // m_tid3 = gettid();
 
     // Let us create a static variable to observe its
     // changes
@@ -38,7 +59,9 @@ void* myThreadFun(void* vargp)
     global_variable++;
     
     // printf("HELLO from thread runnable1 with process ID: %d,  thread ID: %ld\n", myid, m_tid);
-    printf("ProcessID: %d, ThreadID:%" PRIu64 ", Local: %d, Static: %d, Global: %d\n", myid, m_tid, local_variable, local_static_variable, global_variable);
+    printf("ProcessID: %d, ThreadID:%" PRIu64 ", selfthread:%d, Local: %d, Static: %d, Global: %d  \n", myid, m_tid1, get_thread_id(), local_variable, local_static_variable, global_variable);
+    // printf("ProcessID: %d, ThreadID:%" PRIu64 ", Local: %d, Static: %d, Global: %d  ", myid, m_tid, local_variable, local_static_variable, global_variable);
+    // printf("pthread_self() id:%" PRIu64 "\n", pthread_self());
 
     return 0;
 } // end definition of the thread function
